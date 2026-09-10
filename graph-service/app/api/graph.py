@@ -4,13 +4,16 @@ import networkx as nx
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
-from app.services.mock_vasps import check_mock_vasp
+from app.services.vasp_client import VASPClient
 
 
 router = APIRouter(
     prefix="/graph",
     tags=["Graph"],
 )
+
+# Client for the real VASP Intelligence Service
+vasp_client = VASPClient()
 
 
 class Transaction(BaseModel):
@@ -69,12 +72,8 @@ def analyze_graph(request: GraphAnalyzeRequest):
 
     graph = nx.DiGraph()
 
-    # ---------------------------------------------------------
     # 1. Build transaction graph
-    # ---------------------------------------------------------
-
     for transaction in request.transactions:
-
         graph.add_node(
             transaction.from_address,
             address=transaction.from_address,
@@ -100,39 +99,35 @@ def analyze_graph(request: GraphAnalyzeRequest):
             status=transaction.status,
         )
 
-    # ---------------------------------------------------------
     # 2. Multi-hop traversal
-    # ---------------------------------------------------------
-
     reachable_wallets = find_reachable_wallets(
         graph,
         request.wallet,
         request.max_hops,
     )
 
-    # ---------------------------------------------------------
-    # 3. Find known VASP addresses
-    # ---------------------------------------------------------
-
+    # 3. Find known VASP addresses using VASP Intelligence Service
     vasp_matches = []
 
     for address, distance in reachable_wallets.items():
 
-        vasp = check_mock_vasp(address)
+        # Query real VASP Intelligence Service
+        vasp = vasp_client.check_address(address)
 
         if not vasp["known"]:
             continue
 
+        # Find transaction path from investigated wallet to VASP
         path = find_wallet_path(
             graph,
             request.wallet,
             address,
         )
 
+        # Collect transaction evidence along the path
         path_transactions = []
 
         for i in range(len(path) - 1):
-
             source = path[i]
             target = path[i + 1]
 
@@ -153,14 +148,9 @@ def analyze_graph(request: GraphAnalyzeRequest):
                     "status": edge_data["status"],
                 })
 
-        # -----------------------------------------------------
-        # 4. Graph evidence/features for scoring
-        # -----------------------------------------------------
-
         transaction_count = len(path_transactions)
 
-        # Simple factual path-strength indicator.
-        # Lower hop distance means stronger graph proximity.
+        # Simple path-strength metric
         path_strength = 1.0 / (1.0 + distance)
 
         vasp_matches.append({
@@ -173,10 +163,6 @@ def analyze_graph(request: GraphAnalyzeRequest):
             "transactions": path_transactions,
             "vasp": vasp,
         })
-
-    # ---------------------------------------------------------
-    # 5. Return graph analysis
-    # ---------------------------------------------------------
 
     return {
         "success": True,
