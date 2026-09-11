@@ -1,0 +1,42 @@
+{
+  "success": true,
+  "data": {
+    "input_wallet": "0xffffffffffffffffffffffffffffffffffffffff",
+    "chain": "ethereum",
+    "max_hops": 5,
+    "node_count": 10,
+    "edge_count": 12,
+    "reachable_wallet_count": 5,
+    "reachable_wallets": [],
+    "vasp_matches": [
+      {
+        "address": "0x02801aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "graph_distance": 5,
+        "transaction_count": 6,
+        "address_confidence": 0.35,
+        "path_strength": 0.1667,
+        "path": [],
+        "transactions": [],
+        "vasp": {
+          "known": true,
+          "vasp_id": "vasp_001",
+          "vasp_name": "Synthetic VASP 001"
+        }
+      },
+      {
+        "address": "0x02802aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "graph_distance": 1,
+        "transaction_count": 5,
+        "address_confidence": 0.95,
+        "path_strength": 0.5,
+        "path": [],
+        "transactions": [],
+        "vasp": {
+          "known": true,
+          "vasp_id": "vasp_002",
+          "vasp_name": "Synthetic VASP 002"
+        }
+      }
+    ]
+  }
+}
