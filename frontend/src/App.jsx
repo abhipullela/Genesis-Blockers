@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search, ZoomIn, ZoomOut, Focus, Check, ShieldAlert } from 'lucide-react';
+import TransactionGraph from './components/TransactionGraph';
 
 function App() {
   return (
@@ -52,19 +53,7 @@ function App() {
         
         {/* 2. Main Workspace - Left Pane (Graph Canvas) */}
         <section className="relative w-[70%] h-full bg-slate-900 border-r border-slate-800 flex flex-col">
-          {/* Faint grid background */}
-          <div 
-            className="absolute inset-0 z-0 opacity-20"
-            style={{
-              backgroundImage: 'radial-gradient(circle at 1px 1px, #64748b 1px, transparent 0)',
-              backgroundSize: '24px 24px'
-            }}
-          />
-          
-          {/* PLACEHOLDER: Inject <ReactFlow /> here */}
-          <div className="relative z-10 flex-1 flex items-center justify-center pointer-events-none">
-            <p className="text-slate-500 text-sm font-medium tracking-wide">{"<!-- <ReactFlow /> component goes here -->"}</p>
-          </div>
+          <TransactionGraph />
           
           {/* Floating Control Overlay */}
           <div className="absolute bottom-6 left-6 z-20 flex flex-col bg-slate-950 border border-slate-800 rounded-md shadow-xl overflow-hidden">
